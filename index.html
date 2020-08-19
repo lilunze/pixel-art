@@ -6,6 +6,18 @@
     <title>Pixel Art</title>
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
 </head>
+<style>
+    #canvas-container{
+        text-align:center;
+        padding: 10px 0;
+    }
+    #loading{
+        text-align: center;
+    }
+    #loading img{
+        width: 300px;
+    }
+</style>
 <body>
     <div id="buttons">
         <button data-event = "origin">原始</button>
@@ -20,7 +32,12 @@
         <button data-event = "reverse">底片</button>
         <button data-event = "colorRemove">去色</button>
         <button data-event = "brownTransfer">褐色</button>
+        <button data-event = "brightTransfer">亮度增强</button>
+        <button data-event = "contrastTransfer">对比度增强</button>
+        <button data-event = "lemoTransfer">LEMO</button>
     </div>
+    <div id="loading"><img src="loading-1.gif"></div>
+    <div id="canvas-container"></div>
     <script src="index.js"></script>
 </body>
 </html>

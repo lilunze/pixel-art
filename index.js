@@ -1,14 +1,16 @@
 // grid width
 let gridWidth = 1;
-
+let flag = true;
 $('#buttons button').click(function(e) {
-    draw($(e.target).data('event'))
+    if(flag){
+        flag = false;
+        draw($(e.target).data('event'))
+    }
 })
 
 const func = {
     // 原始
     origin: (R, G, B) => {
-        gridWidth = 1;
         return `rgb(${R}, ${G}, ${B})`;
     },
     // 浮雕
@@ -91,11 +93,57 @@ const func = {
         const g = R * 0.349 + G * 0.686 + B * 0.168;
         const b = R * 0.272 + G * 0.534 + B * 0.131;
         return `rgb(${r}, ${g}, ${b})`
+    },
+    // 亮度增强
+    brightTransfer: (R, G, B) => {
+        const degree = 30;
+        let r = R + degree;
+        let g = G + degree;
+        let b = B + degree;
+        r = r < 0 ? 0 : r > 255 ? 255 : r;
+        g = g < 0 ? 0 : g > 255 ? 255 : g;
+        b = b < 0 ? 0 : b > 255 ? 255 : b;
+        return `rgb(${r}, ${g}, ${b})`
+    },
+    // 对比度增强
+    contrastTransfer: (R, G, B) => {
+        const degree = 40;
+        let contrast = (100 + degree) / 100;
+        contrast *= contrast;
+        let r = parseInt(((R / 255 - 0.5) * contrast + 0.5) * 255);
+        let g = parseInt(((G / 255 - 0.5) * contrast + 0.5) * 255);
+        let b = parseInt(((B / 255 - 0.5) * contrast + 0.5) * 255);
+        r = r < 0 ? 0 : r > 255 ? 255 : r;
+        g = g < 0 ? 0 : g > 255 ? 255 : g;
+        b = b < 0 ? 0 : b > 255 ? 255 : b;
+        return `rgb(${r}, ${g}, ${b})`
+    },
+    // LEMO
+    lemoTransfer: (R, G, B) => {
+        const mixPixel = 10
+        let r = mixPixel > 128 ? (R + (mixPixel + mixPixel - 255) * ((Math.Sqrt(R / 255)) * 255 - R) / 255) : (R + (mixPixel + mixPixel - 255) * (R - R * R / 255) / 255);
+        r = r < 0 ? 0 : r > 255 ? 255 : r;
+        r = (mixPixel + r) - mixPixel * r / 128;
+        r = r < 0 ? 0 : r > 255 ? 255 : r;
+
+        let g = mixPixel > 128 ? (G + (mixPixel + mixPixel - 255) * ((Math.Sqrt(G / 255)) * 255 - G) / 255) : (G + (mixPixel + mixPixel - 255) * (G - G * G / 255) / 255);
+        g = g < 0 ? 0 : g > 255 ? 255 : g;
+        g = (mixPixel + g) - mixPixel * g / 128;
+        g = g < 0 ? 0 : g > 255 ? 255 : g;
+
+        let b = mixPixel > 128 ? (B + (mixPixel + mixPixel - 255) * ((Math.Sqrt(B / 255)) * 255 - B) / 255) : (B + (mixPixel + mixPixel - 255) * (B - B * B / 255) / 255);
+        b = b < 0 ? 0 : b > 255 ? 255 : b;
+        b = (mixPixel + b) - mixPixel * b / 128;
+        b = b < 0 ? 0 : b > 255 ? 255 : b;
+
+        return `rgb(${r}, ${g}, ${b})`
     } 
 }
 
 function draw(type) {
-    $('body').remove('canvas');
+    $('#canvas-container').empty();
+    $('#loading').show()
+    gridWidth = 1;
     let canvasN = document.createElement('canvas');
     let canvas = document.createElement('canvas')
     var ctx = canvas.getContext('2d');
@@ -130,9 +178,13 @@ function draw(type) {
                 ctxN.fillRect(x * gridWidth - gridWidth / 2, y * gridWidth - gridWidth / 2, gridWidth, gridWidth);
             }
         }
-        document.querySelector('body').appendChild(canvasN)
+        $('#loading').hide()
+        document.querySelector('#canvas-container').appendChild(canvasN)
+        flag = true;
     })
 }
+
+draw('origin')
 
 
 
